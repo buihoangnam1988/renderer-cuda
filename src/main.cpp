@@ -56,6 +56,9 @@
 
 using namespace std;
 
+// Global variables
+SDL_Window * screen = NULL;
+
 // The CUDA kernels will draw directly inside an OpenGL buffer (PBO)
 // which will be displayed via an OpenGL texture.
 
@@ -103,7 +106,8 @@ void ModeDescription()
     result += " Reflect(F7):"; result += g_bUseReflections?"ON,":"OFF,";
     result += " Shadows(F8):"; result += g_bUseShadows?"ON,":"OFF,";
     result += " Antialias(F9):"; result += g_bUseAntialiasing?"ON":"OFF";
-    SDL_WM_SetCaption(result.c_str(), result.c_str());
+    //SDL_WM_SetCaption(result.c_str(), result.c_str()); //old
+    SDL_SetWindowTitle(screen, result.c_str());
 }
 
 bool g_benchmark = false;
@@ -144,12 +148,21 @@ int main(int argc, char *argv[])
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
         panic("Couldn't initialize SDL: %s\n", SDL_GetError());
     atexit(SDL_Quit); // Clean up on exit
-    if (!SDL_SetVideoMode( MAXX, MAXY, 0, SDL_OPENGL))
+
+    screen = SDL_CreateWindow("CUDA Renderer",
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      640, 480,
+      SDL_WINDOW_OPENGL);
+    //SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+
+    if (!screen)
         panic("Couldn't set video mode: %s\n", SDL_GetError());
     // Ignore mice, we love keyboards
     SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
     // OpenGL startup
+    auto context = SDL_GL_CreateContext(screen);
 
     // We need an OpenGL PBO...
     cout << "Loading extensions: " << glewGetErrorString(glewInit()) << endl;
@@ -479,7 +492,7 @@ int main(int argc, char *argv[])
 		    else
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *p);
 		}
-		SDL_GL_SwapBuffers();
+		SDL_GL_SwapWindow(screen);
 		while(!keys.isH() && !keys.Abort()) keys.poll();
 		while(keys.isH() || keys.Abort()) keys.poll();
 		framesDrawn = 1;

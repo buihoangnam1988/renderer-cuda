@@ -27,3 +27,10 @@ src/config.h
 src/cudaRenderer
 src/stamp-h1
 tags
+*.deps
+VisualC/Release/
+VisualC/Debug/
+VisualC/.vs/
+*.db
+*.filters
+*.bvh

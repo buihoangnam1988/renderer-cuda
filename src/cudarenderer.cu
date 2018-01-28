@@ -847,6 +847,8 @@ __global__ void CoreLoopTrianglesRaycaster(
 // The bridge to the normal C++ world: templated, to include only the mode-specific code in each incantation
 
 bool g_bFirstTime = true;
+#include "D:/LIBS/SDL/SDL2-2.0.5/SDL/include/SDL_video.h"
+extern SDL_Window * screen;
 
 void CudaRender(
     Matrix3 *cudaWorldToCameraSpace,
@@ -1010,7 +1012,7 @@ void CudaRender(
 	for(unsigned o=0;o<strlen(help); o++)
 	    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, help[o]);
     }
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(screen);
 }
 
 void setConstants() {
